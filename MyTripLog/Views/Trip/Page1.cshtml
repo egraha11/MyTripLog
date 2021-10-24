@@ -1,0 +1,27 @@
+﻿@model Trip;
+
+
+<div class="container">
+    <h1 class="text-center">Add Trip Destination and Dates</h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <form asp-action="Add" asp-route-id="Page2" method="post">
+        <div class="form-group">
+            <label asp-for="Destination" class="control-label">Destination</label>
+            <input asp-for="Destination" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Accommodation" class="control-label">Accomodation</label>
+            <input asp-for="Accommodation" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="StartDate" class="control-label">Start Date</label>
+            <input asp-for="StartDate" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDate" class="control-label">End Date</label>
+            <input asp-for="EndDate" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-dark bg-dark text-white">Next</button>
+        <a asp-controller="Home" asp-action="Clear" class="btn-light text-dark">Cancel</a>
+    </form>
+</div>

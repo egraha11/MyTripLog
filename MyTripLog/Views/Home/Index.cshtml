@@ -1,0 +1,14 @@
+﻿@model List<Trip>
+
+<a asp-controller="Trip" asp-action="Add">Add Trip</a>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr><th>Destination</th><th>Start Date</th><th>End Date</th><th>Accommodation</th><th>Things to Do</th></tr>
+    </thead>
+    <tbody>
+        @foreach(var trip in Model)
+            {
+                <tr><td>@trip.Destination</td><td>@trip.StartDate</td><td>@trip.EndDate</td><td>@trip.Accommodation</td><td>@trip.ThingToDo1 <br /> @trip.ThingToDo2 <br />@trip.ThingToDo3</td></tr>
+            }
+    </tbody>
+</table>
