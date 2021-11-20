@@ -27,7 +27,7 @@ namespace MyTripLog
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<TripContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TripContext")));
+            services.AddDbContext<TripContext>(options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TripLog2;Trusted_Connection=True;MultipleActiveResultSets=true"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

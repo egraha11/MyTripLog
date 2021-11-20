@@ -7,7 +7,11 @@ namespace MyTripLog.Models
 {
     public class TripViewModel
     {
-        public Trip Trip { get; set; }
-        public int PageNumber { get; set; }
+        public string DestinationString { get; set; }
+        public string AccommodationStringName { get; set; }
+        public string AccommodationStringPhone { get; set; }
+        public string AccommodationStringEmail { get; set; }
+        public string ActivityString { get; set; }
+
     }
 }

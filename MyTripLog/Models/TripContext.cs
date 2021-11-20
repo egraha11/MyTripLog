@@ -14,24 +14,25 @@ namespace MyTripLog.Models
 
 
         public DbSet<Trip> Trips { get; set; }
+        public DbSet<Destination> Destinations { get; set; }
+        public DbSet<Activity> Activities { get; set; }
+        public DbSet<Accommodation> Accommodations { get; set; }
+
+        public DbSet<TripActivity> TripActivities { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Trip>().HasData(
-            new Trip
-            {
-                TripId = 1,
-                Destination = "New York City",
-                Accommodation = "The Ritz",
-                StartDate = new DateTime(10/25/2020),
-                EndDate = new DateTime(11/1/ 2020),
-                AccommodationPhone = "330-330-3330",
-                AccommodationEmail = "accomodation@gmail.com",
-                ThingToDo1 = "Go to a show",
-                ThingToDo2 = "Ride the subway"
-            }
-            );
+            modelBuilder.Entity<Trip>().HasOne(t => t.Destination).WithMany(d => d.Trips).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Trip>().HasOne(t => t.Accommodation).WithMany(d => d.Trips).OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<TripActivity>().HasKey(ta => new { ta.TripId, ta.ActivityId});
+
+            modelBuilder.Entity<TripActivity>().HasOne(ta => ta.Trip).WithMany(t => t.TripActivities).HasForeignKey(ta => ta.TripId);
+
+            modelBuilder.Entity<TripActivity>().HasOne(ta => ta.Activity).WithMany(a => a.TripActivities).HasForeignKey(ta => ta.ActivityId);
         }
     }
 }

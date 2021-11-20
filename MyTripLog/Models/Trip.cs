@@ -11,23 +11,22 @@ namespace MyTripLog.Models
 
         public int TripId { get; set; }
 
-        [Required(ErrorMessage = "Please enter a destination")]
-        public string Destination { get; set; }
-
         [Required(ErrorMessage = "Please enter a valid start date, ex(xx/xx/xxxx)")]
         public DateTime StartDate { get; set; }
 
         [Required(ErrorMessage = "Please enter a valid end date, ex(xx/xx/xxxx)")]
         public DateTime EndDate { get; set; }
 
-        public string Accommodation { get; set; }
 
-        public string AccommodationPhone { get; set; }
+        public int DestinationId { get; set; }
+        public Destination Destination { get; set; }
 
-        public string AccommodationEmail { get; set; }
+        public ICollection<TripActivity> TripActivities { get; set; }
 
-        public string ThingToDo1 { get; set; }
-        public string ThingToDo2 { get; set; }
-        public string ThingToDo3 { get; set; }
+
+
+        public int? AccommodationId { get; set; }
+        public Accommodation Accommodation { get; set; }
+
     }
 }
