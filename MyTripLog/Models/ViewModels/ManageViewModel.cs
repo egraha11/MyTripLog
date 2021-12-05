@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace MyTripLog.Models
 {
-    public class TripActivity
+    public class ManageViewModel : DropDownViewModel
     {
 
-        public int TripId { get; set; }
-        public int ActivityId { get; set; }
-
-        public Trip Trip { get; set; }
+        public Destination Destination { get; set; }
+        public Accommodation Accommodation { get; set; }
         public Activity Activity { get; set; }
+
     }
 }

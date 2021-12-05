@@ -1,9 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    string message = TempData["message"]?.ToString();
+    string subheader = ViewBag.Subheader;
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MyTripLog</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -16,16 +22,16 @@
         </div>
 
     </div>
-    <div class="row">
-        <div class="col text-center">
-            @if (TempData.Keys.Contains("Added"))
-            {
-                <h4>Trip to @TempData["Added"] added</h4>
-            }
-        </div>
-    </div>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <h2 class="bg-light text-center p-2 mb-1">@message</h2>
+            }
+            @if (!string.IsNullOrEmpty(subheader))
+            {
+                <h2 class="mt-2 mb-2">@subheader</h2>
+            }
             @RenderBody()
         </main>
     </div>

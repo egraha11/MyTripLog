@@ -1,9 +1,0 @@
-﻿<div class="container">
-    <h1 class="text-center">Add Things To Do In @TempData["Destination"]</h1>
-    <p>Hold dpwn the CTRL key to select multiple items</p>
-    <form asp-action="Add" method="post">
-        <select name="select" multiple asp-items="@(new SelectList(ViewBag.Activities, "ActivityId", "ActivityName"))"></select>
-        <button type="submit" class="btn btn-dark bg-dark text-white">Next</button>
-        <a asp-controller="Home" asp-action="Clear" class="btn-light text-dark">Cancel</a>
-    </form>
-</div>

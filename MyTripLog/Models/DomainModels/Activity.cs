@@ -9,7 +9,7 @@ namespace MyTripLog.Models
     {
 
         public int ActivityId { get; set; }
-        public string ActivityName { get; set; }
+        public string Name { get; set; }
 
         public ICollection<TripActivity> TripActivities { get; set; }
     }

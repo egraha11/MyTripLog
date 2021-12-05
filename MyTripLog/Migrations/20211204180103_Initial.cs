@@ -13,9 +13,9 @@ namespace MyTripLog.Migrations
                 {
                     AccommodationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AccommodationName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccommodationPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccommodationEmail = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -28,7 +28,7 @@ namespace MyTripLog.Migrations
                 {
                     ActivityId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ActivityName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,7 +41,7 @@ namespace MyTripLog.Migrations
                 {
                     DestinationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DestinationName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,7 +77,7 @@ namespace MyTripLog.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TripActivities",
+                name: "TripActivity",
                 columns: table => new
                 {
                     TripId = table.Column<int>(type: "int", nullable: false),
@@ -85,15 +85,15 @@ namespace MyTripLog.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TripActivities", x => new { x.TripId, x.ActivityId });
+                    table.PrimaryKey("PK_TripActivity", x => new { x.TripId, x.ActivityId });
                     table.ForeignKey(
-                        name: "FK_TripActivities_Activities_ActivityId",
+                        name: "FK_TripActivity_Activities_ActivityId",
                         column: x => x.ActivityId,
                         principalTable: "Activities",
                         principalColumn: "ActivityId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TripActivities_Trips_TripId",
+                        name: "FK_TripActivity_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
                         principalColumn: "TripId",
@@ -101,8 +101,8 @@ namespace MyTripLog.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TripActivities_ActivityId",
-                table: "TripActivities",
+                name: "IX_TripActivity_ActivityId",
+                table: "TripActivity",
                 column: "ActivityId");
 
             migrationBuilder.CreateIndex(
@@ -119,7 +119,7 @@ namespace MyTripLog.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TripActivities");
+                name: "TripActivity");
 
             migrationBuilder.DropTable(
                 name: "Activities");

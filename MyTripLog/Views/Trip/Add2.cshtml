@@ -1,0 +1,23 @@
+﻿@model TripViewModel;
+
+@{
+    ViewBag.Title = "Add Trip - Page 2"; ;
+    ViewBag.SubHeader = $"Add Things To Do In {Model.Destination}";
+}
+
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="Add">
+    <input type="hidden" asp-for="PageNumber" />
+    <p>Hold down the CTRL key to select mutliple items</p>
+    <div class="form-group">
+        <select asp-for="SelectedActivities" class="form-group" 
+                asp-items="@(new SelectList(Model.Activities, "ActivityId", "Name"))" multiple size="20">
+        </select>
+
+        <button type="submit" class="btn btn-dark">Save</button>
+        <a class="btn-outline-dark" asp-action="Cancel">Cancel</a>
+    </div>
+
+</form>

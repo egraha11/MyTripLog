@@ -11,18 +11,17 @@ namespace MyTripLog.Controllers
 {
     public class HomeController : Controller
     {
-        private TripContext context { get; set; }
-
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(TripContext ctx)
-        {
-            context = ctx;
-        }
-
+        public Repository<Trip> data { get; set; }
+        public HomeController(TripContext ctx) => data = new Repository<Trip>(ctx);
         public ViewResult Index()
         {
-            IEnumerable<Trip> trips = context.Trips.OrderBy(t => t.Destination).ToList();
+            var options = new QueryOptions<Trip>
+            {
+                Includes = "Destination, Accommodation, TripActivities.Activity",
+                OrderBy = t => t.StartDate
+            };
+
+            var trips = data.List(options);
 
             return View(trips);
         }
@@ -38,13 +37,5 @@ namespace MyTripLog.Controllers
         {
             return View();
         }
-
-        /**
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-        **/
     }
 }

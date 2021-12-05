@@ -13,7 +13,7 @@ namespace MyTripLog.Models
 
 
         [Required(ErrorMessage = "Please enter a destination")]
-        public string DestinationName { get; set; }
+        public string Name { get; set; }
 
 
         public ICollection<Trip> Trips { get; set; }

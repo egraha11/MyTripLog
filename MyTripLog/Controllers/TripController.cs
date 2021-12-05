@@ -10,189 +10,151 @@ namespace MyTripLog.Controllers
     public class TripController : Controller
     {
 
-        TripContext context;
+        private UnitOfWork data { get; set; }
+        public TripController(TripContext ctx) => data = new UnitOfWork(ctx);
 
-        public IActionResult Index()
+
+
+        public RedirectToActionResult Index() => RedirectToAction("Index", "Home");
+
+        public IActionResult Cancel()
         {
-            return View();
-        }
-
-        public TripController(TripContext cxt)
-        {
-            context = cxt;
-        }
-
-
-        public IActionResult DeleteDestination(int id)
-        {
-            Trip deleteTrip = context.Trips.Find(id);
-            context.Trips.Remove(deleteTrip);
-            context.SaveChanges();
-
+            TempData.Clear();
             return RedirectToAction("Index", "Home");
         }
-
 
         [HttpGet]
-        public ViewResult Add()
+        public ViewResult Add(string id = "")
         {
+            TripViewModel vm = new TripViewModel();
 
-            ViewBag.Destinations = context.Destinations.OrderBy(d => d.DestinationName).ToList();
-            ViewBag.Accommodations = context.Accommodations.OrderBy(d => d.AccommodationName).ToList();
-
-            return View("Page1", new Trip());
-        }
-
-
-
-
-        [HttpGet]
-        public ViewResult Manage()
-        {
-
-            ViewBag.Destinations = context.Destinations.OrderBy(d => d.DestinationName).ToList();
-            ViewBag.Accommodations = context.Accommodations.OrderBy(acc => acc.AccommodationName).ToList();
-            ViewBag.Activities = context.Activities.OrderBy(act => act.ActivityName).ToList();
-
-            return View("Manage", new TripViewModel());
-        }
-
-        [HttpPost]
-        public IActionResult Manage(TripViewModel newTripView)
-        {
-
-            if(newTripView.DestinationString != null)
+            switch (id.ToLower())
             {
-                Destination newDest = new Destination();
-                newDest.DestinationName = newTripView.DestinationString;
-                context.Destinations.Add(newDest);
-                context.SaveChanges();
+                case "page2":
 
-                /**
-                Destination dest2 = context.Destinations.Where(d => d.DestinationName == newDest.DestinationName).FirstOrDefault();
-                return Content(dest2.DestinationName);
-                **/
+                    vm.PageNumber = 2;
+
+                    int destinationId = (int)TempData.Peek(nameof(Trip.DestinationId));
+                    vm.Destination = data.Destinations.Get(destinationId).Name;
+
+                    vm.Activities = data.Activities.List(new QueryOptions<Activity>
+                    {
+                        OrderBy = a =>a.Name
+                    });
+                    return View("Add2", vm);
+
+
+                case "page1":
+                default:
+                    vm.PageNumber = 1;
+
+                    vm.Destinations = data.Destinations.List(new QueryOptions<Destination>
+                    {
+                        OrderBy = a => a.Name
+                    });
+
+                    vm.Accommodations = data.Accommodations.List(new QueryOptions<Accommodation>
+                    {
+                        OrderBy = a => a.Name
+                    });
+
+                    return View("Add1", vm);
             }
-
-            if (newTripView.AccommodationStringName != null)
-            {
-                Accommodation accommodation = new Accommodation();
-                accommodation.AccommodationName = newTripView.AccommodationStringName;
-
-                if(newTripView.AccommodationStringPhone != null)
-                {
-                    accommodation.AccommodationPhone = newTripView.AccommodationStringPhone;
-                }
-                if(newTripView.AccommodationStringEmail != null)
-                {
-                    accommodation.AccommodationEmail = newTripView.AccommodationStringEmail;
-                }
-                context.Accommodations.Add(accommodation);
-                context.SaveChanges();
-            }
-            if (newTripView.ActivityString != null)
-            {
-                Activity activity = new Activity();
-
-                activity.ActivityName = newTripView.ActivityString;
-
-                context.Activities.Add(activity);
-                context.SaveChanges();
-            }
-
-            return RedirectToAction("Index", "Home");
-        }
-
-        public RedirectToActionResult Delete(int destination = 0, int accommodation = 0, int activity = 0)
-        {
-
-            if(destination != 0)
-            {
-                var dest = context.Destinations.Find(destination);
-                context.Destinations.Remove(dest);
-                context.SaveChanges();
-            }
-            if(accommodation != 0)
-            {
-                var acc = context.Accommodations.Find(accommodation);
-                context.Accommodations.Remove(acc);
-                context.SaveChanges();
-            }
-            if (activity != 0)
-            {
-                var acc = context.Activities.Find(activity);
-                context.Activities.Remove(acc);
-                context.SaveChanges();
-            }
-
-            return RedirectToAction("Index", "Home");
         }
 
 
         [HttpPost]
-        public IActionResult Add2(Trip newTrip)
+        public IActionResult Add(TripViewModel vm)
         {
-            if (ModelState.IsValid)
+
+            switch (vm.PageNumber)
             {
-                TempData["DestinationId"] = newTrip.DestinationId;
-                TempData["AccommodationId"] = newTrip.AccommodationId;
-                TempData["StartDate"] = newTrip.StartDate;
-                TempData["EndDate"] = newTrip.EndDate;
+                case 1:
 
-                
-                Destination dest = context.Destinations.Find(newTrip.DestinationId);
+                    if (!ModelState.IsValid)
+                    {
+                        vm.Destinations = data.Destinations.List(new QueryOptions<Destination>
+                        {
+                            OrderBy = a => a.Name
+                        });
 
-                ViewBag.Activities = context.Activities.OrderBy(a => a.ActivityName).ToList();
+                        vm.Accommodations = data.Accommodations.List(new QueryOptions<Accommodation>
+                        {
+                            OrderBy = a => a.Name
+                        });
 
-                TempData["Destination"] = dest.DestinationName;
-                return View("Page2");
-                
+
+                        return View("Add1", vm);
+                    }
+                    TempData[nameof(Trip.DestinationId)] = vm.Trip.DestinationId;
+                    TempData[nameof(Trip.StartDate)] = vm.Trip.StartDate;
+                    TempData[nameof(Trip.EndDate)] = vm.Trip.EndDate;
+
+                    TempData[nameof(Trip.AccommodationId)] = (vm.Trip.AccommodationId.HasValue && vm.Trip.AccommodationId.Value > 0) ? vm.Trip.AccommodationId : 0;
+
+
+                    if (vm.Trip.AccommodationId > 0)
+                    {
+                        TempData[nameof(Trip.AccommodationId)] = vm.Trip.AccommodationId;
+                    }
+
+                    return RedirectToAction("Add", new { id = "Page2" });
+
+                case 2:
+
+                    vm.Trip = new Trip
+                    {
+                        DestinationId = (int)TempData[nameof(Trip.DestinationId)],
+                        StartDate = (DateTime)TempData[nameof(Trip.StartDate)],
+                        EndDate = (DateTime)TempData[nameof(Trip.EndDate)]
+                    };
+
+
+                    if (vm.Trip.AccommodationId <= 0)
+                    {
+                        vm.Trip.AccommodationId = null;
+                    }
+
+                    if(vm.SelectedActivities != null)
+                    {
+                        foreach (int activityId in vm.SelectedActivities)
+                        {
+                            if (vm.Trip.TripActivities == null)
+                            {
+                                vm.Trip.TripActivities = new List<TripActivity>();
+                            }
+
+                            vm.Trip.TripActivities.Add(new TripActivity { ActivityId = activityId });
+                        }
+                    }
+
+
+
+                    data.Trips.Insert(vm.Trip);
+                    data.Save();
+
+                    Destination destination = data.Destinations.Get(vm.Trip.DestinationId);
+
+                    TempData["message"] = $"Trip to {destination.Name} added";
+                    return RedirectToAction("Index", "Home");
+                default:
+                    return RedirectToAction("Index", "Home");
             }
-            
-            else
-            {
-                return View("Page1", new Trip());
-            }
-                
-
         }
 
         [HttpPost]
-        public IActionResult Add(int[] select)
+        public RedirectToActionResult Delete(int id)
         {
+            Trip trip = data.Trips.Get(id);
 
-            Trip newTrip = new Trip();
+            Destination destination = data.Destinations.Get(trip.DestinationId);
 
-            
-            newTrip.DestinationId = (int)TempData["DestinationId"];
+            data.Trips.Delete(trip);
+            data.Save();
 
-            
-            newTrip.AccommodationId = (int)TempData["AccommodationId"];
-            newTrip.StartDate = (DateTime)TempData.Peek("StartDate");
-            newTrip.EndDate = (DateTime)TempData.Peek("EndDate");
-
-            context.Trips.Add(newTrip);
-            context.SaveChanges();
-
-            var trip = context.Trips.Where(t => t.DestinationId == newTrip.DestinationId);
-            trip.Where(t => t.AccommodationId == newTrip.AccommodationId);
-            trip.Where(t => t.StartDate == (DateTime)TempData["StartDate"]);
-            int id = trip.Where(t => t.EndDate == (DateTime)TempData["EndDate"]).FirstOrDefault().TripId;
-
-            foreach (int integer in select)
-            {
-                TripActivity newTripActivity = new TripActivity();
-
-                newTripActivity.ActivityId = integer;
-                newTripActivity.TripId = id;
-
-                context.TripActivities.Add(newTripActivity);
-                context.SaveChanges();
-            }
+            TempData["message"] = $"Trip to {destination.Name} Deleted";
 
             return RedirectToAction("Index", "Home");
-           
         }
-       
     }
 }
